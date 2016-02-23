@@ -57,6 +57,17 @@
 
 #define SERIAL_RESERVED_CHAR_MATCH (255)
 
+/**
+ * @defgroup SerialRXErrors Serial RX Errors Macros
+ *
+ * @{
+ */
+#define SERIAL_ERROR_RX_OVERRUN  (1 << 0)
+#define SERIAL_ERROR_RX_FRAMING  (1 << 1)
+#define SERIAL_ERROR_RX_PARITY   (1 << 2)
+#define SERIAL_ERROR_RX_OVERFLOW (1 << 3)
+/**@}*/
+
 typedef enum {
     ParityNone = 0,
     ParityOdd = 1,
@@ -174,6 +185,21 @@ void serial_putc(serial_t *obj, int c);
  * @return Non-zero value if a character can be read, 0 if nothing to read
  */
 int  serial_readable(serial_t *obj);
+
+/** Returns any errors that were encountered by the serial peripheral:
+ *  RX overrun, parity error, framing error, or FIFO overflow. All the
+ *  error flags are cleared after the function call.
+ *
+ * The return value is a bit field where one bit represents one error
+ * type (in the above mentioned order, the least significant bit first).
+ *
+ * @param obj The serial object
+ * @return Non-zero value if any of the errors have occurred, 0 otherwise
+ * @retval 0000b No errors have occurred on the serial
+ * @retval 0101b RX overrrun, framing errors
+ * @retval 1111b All error types have occurred
+ */
+int serial_error(serial_t *obj);
 
 /** Check if the serial peripheral is writable
  *
